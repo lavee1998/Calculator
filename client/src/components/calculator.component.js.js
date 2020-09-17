@@ -102,12 +102,12 @@ class Calculator extends React.Component {
     const obj = { id: this.state.myId, value: "0" };
     axios
     
-      .post("http://localhost:5000/number/update/mynumber", obj)
+      .post("/number/update/mynumber", obj)
       .then((res) => console.log("initialization succesfulk!")
       )
       .catch((err) =>  { 
        
-        axios.post("http://localhost:5000/number/add", obj)
+        axios.post("/number/add", obj)
         .then((res) => console.log("initialization succesful!")
         )
         .catch((err) =>  { console.log(err)});

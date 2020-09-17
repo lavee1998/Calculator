@@ -61,8 +61,8 @@ class Calculator extends React.Component {
       return;  //check if the result is a number or not
     }
 
-    for(let i = 0; i<mytags.length;++i){
-      if((mytags[i].length > 1  && mytags[i][0] === '0' && mytags[i][1] !== '.')){
+    for(let i = 0; i<this.state.result.length;++i){
+      if((this.state.result[i].length > 1  && this.state.result[i][0] === '0' && this.state.result[i][1] !== '.')){
 
         this.SendMessage("Your expression is wrong. Please make it correct (use AC/C) !");
         return;

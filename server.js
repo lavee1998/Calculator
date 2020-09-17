@@ -6,6 +6,8 @@ const calculatorRoutes = express.Router();
 let Number = require('./models/number.model');
 require('dotenv').config();
 
+const path = require('path');
+
 
 //require('dotenv').config();
 
@@ -26,10 +28,21 @@ connection.once('open', () => {
   console.log("MongoDB database connection established successfully");
 })
 
-app.use(express.static('client/build'));
+
 
 
 const numberRouter = require('./routes/number');
+
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+
+  app.get('*', (req,res) => {
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+  })
+
+}
+
 app.use('/number',numberRouter);
 
 app.listen(port, () => {

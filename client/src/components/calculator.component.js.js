@@ -36,7 +36,7 @@ class Calculator extends React.Component {
   Read() {
     console.log("Read the number from the file!");
     axios
-      .get("http://localhost:5000/number/mynumber")
+      .get("/number/mynumber")
       .then((res) => {
         // console.log(res.data)
         this.setState(
@@ -74,7 +74,7 @@ class Calculator extends React.Component {
 
     const obj = { id: "mynumber", value: this.state.result };
     axios
-      .post("http://localhost:5000/number/update/mynumber", obj)
+      .post("/number/update/mynumber", obj)
       .then((res) => console.log(res.data)
       )
       .catch(function (error) {

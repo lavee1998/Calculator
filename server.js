@@ -12,7 +12,7 @@ const path = require('path');
 //require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -28,11 +28,9 @@ connection.once('open', () => {
   console.log("MongoDB database connection established successfully");
 })
 
-
-
-
 const numberRouter = require('./routes/number');
 
+app.use('/number',numberRouter);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
@@ -42,8 +40,6 @@ if (process.env.NODE_ENV === 'production') {
   })
 
 }
-
-app.use('/number',numberRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

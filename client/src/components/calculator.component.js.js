@@ -60,7 +60,6 @@ class Calculator extends React.Component {
       this.setState({message: "Your expression is not a number, please edit it!" })
       return;  //check if the result is a number or not
     }
-    let mytags =  this.state.result.split('*').join(',').split('+').join(',').split('-').join(',').split('/').join(',').split(',');
 
     for(let i = 0; i<mytags.length;++i){
       if((mytags[i].length > 1  && mytags[i][0] === '0' && mytags[i][1] !== '.')){
@@ -150,15 +149,19 @@ class Calculator extends React.Component {
           return;
         }
       }
-      let mytags =  this.state.result.split('*').join(',').split('+').join(',').split('-').join(',').split('/').join(',').split(',');
+      if(typeof this.state.result === 'string' )
+      {
+        let mytags =  this.state.result.split('*').join(',').split('+').join(',').split('-').join(',').split('/').join(',').split(',');
 
-      for(let i = 0; i<mytags.length;++i){
-        if((mytags[i].length > 1  && mytags[i][0] === '0' && mytags[i][1] !== '.')){
-
-          this.SendMessage("Your expression is wrong. Please make it correct (use AC/C) !");
-          return;
+        for(let i = 0; i<mytags.length;++i){
+          if((mytags[i].length > 1  && mytags[i][0] === '0' && mytags[i][1] !== '.')){
+  
+            this.SendMessage("Your expression is wrong. Please make it correct (use AC/C) !");
+            return;
+          }
         }
       }
+      
 
 
       this.setState({ result: eval(this.state.result) });

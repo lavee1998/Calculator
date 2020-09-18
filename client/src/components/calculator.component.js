@@ -63,7 +63,7 @@ class Calculator extends React.Component {
 
     const obj = { id: "mynumber", value: this.state.result };
     API.updateNumber("mynumber", obj).then((res) =>
-      console.log(res.data).catch((err) => console.log(error))
+      console.log(res.data).catch((err) => console.log(err))
     );
   }
 

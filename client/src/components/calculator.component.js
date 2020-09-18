@@ -48,7 +48,7 @@ class Calculator extends React.Component {
     }
 
     if (
-      this.state.resultlength > 1 &&
+      this.state.result.length > 1 &&
       this.state.result[0] === "0" &&
       this.state.result[1] !== "."
     ) {

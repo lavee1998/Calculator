@@ -11,7 +11,7 @@ export default {
 	},
 	// Update the number with the given id to the given number
 	updateNumber: function(id,numberData) {
-		return axios.post('/number/' + id,numberData);
+		return axios.post('/number/update/' + id,numberData);
     },
     addNumber: function(numberData) {
         return axios.post('/number/add', numberData);

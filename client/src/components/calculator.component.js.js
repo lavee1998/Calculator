@@ -2,6 +2,9 @@ import React from "react";
 
 import axios from "axios";
 
+import API from "../utils/API";
+import CalculatorButtons from "../utils/constans"
+
 class Calculator extends React.Component {
   constructor() {
     super();
@@ -12,35 +15,18 @@ class Calculator extends React.Component {
       result: "",
       message: "Welcome to my Calculator Application!",
       deletebuttons: ["AC", "C"],
-      buttons: [
-        "7",
-        "8",
-        "9",
-        "/",
-        "4",
-        "5",
-        "6",
-        "*",
-        "1",
-        "2",
-        "3",
-        "-",
-        ".",
-        "0",
-        "=",
-        "+",
-      ],
+      buttons: CalculatorButtons
     };
   }
 
   Read() {
     console.log("Read the number from the file!");
-    axios
-      .get("/number/mynumber")
+
+    API.getNumberById("mynumber")
       .then((res) => {
         // console.log(res.data)
-        this.setState(
-          { result: res.data.value }, () => this.SendMessage("The number value: " + this.state.result + "\n")
+        this.setState({ result: res.data.value }, () =>
+          this.SendMessage("The number value: " + this.state.result + "\n")
         );
       })
       .catch(function (error) {
@@ -48,48 +34,46 @@ class Calculator extends React.Component {
       });
   }
 
-  SendMessage(message)
-  {
+  SendMessage(message) {
     console.log(message);
-    this.setState({message: message});
+    this.setState({ message: message });
   }
 
   Write() {
-    if(isNaN(this.state.result)){
-     
-      this.setState({message: "Your expression is not a number, please edit it!" })
-      return;  //check if the result is a number or not
+    if (isNaN(this.state.result)) {
+      this.setState({
+        message: "Your expression is not a number, please edit it!",
+      });
+      return; //check if the result is a number or not
     }
 
-    for(let i = 0; i<this.state.result.length;++i){
-      if((this.state.result[i].length > 1  && this.state.result[i][0] === '0' && this.state.result[i][1] !== '.')){
-
-        this.SendMessage("Your expression is wrong. Please make it correct (use AC/C) !");
+    for (let i = 0; i < this.state.result.length; ++i) {
+      if (
+        this.state.result[i].length > 1 &&
+        this.state.result[i][0] === "0" &&
+        this.state.result[i][1] !== "."
+      ) {
+        this.SendMessage(
+          "Your expression is wrong. Please make it correct (use AC/C) !"
+        );
         return;
       }
     }
     console.log("Write the number to the file!");
-    // console.log('The number value: ' + this.state.result + "\n");
 
     const obj = { id: "mynumber", value: this.state.result };
-    axios
-      .post("/number/update/mynumber", obj)
-      .then((res) => console.log(res.data)
-      )
-      .catch(function (error) {
-        console.log(error);
-      });
+    API.updateNumber("mynumber", obj).then((res) =>
+      console.log(res.data).catch((err) => console.log(error))
+    );
   }
 
-  SendMessageToWrite(data)
-  {
+  SendMessageToWrite(data) {
     console.log(data);
   }
 
   updateValues = (value) => {
-    this.setState(
-      { currValue: this.state.currValue },
-      () => this.updatePrevvalue(value)
+    this.setState({ currValue: this.state.currValue }, () =>
+      this.updatePrevvalue(value)
     );
   };
 
@@ -97,24 +81,39 @@ class Calculator extends React.Component {
     this.setState({ prevValue: value });
   };
 
-  componentDidMount() { //init
+  componentDidMount() {
+    //init
     const obj = { id: this.state.myId, value: "0" };
-    axios
-    
-      .post("/number/update/mynumber", obj)
-      .then((res) => console.log("initialization succesfulk!")
-      )
-      .catch((err) =>  { 
-       
-        axios.post("/number/add", obj)
-        .then((res) => console.log("initialization succesful!")
-        )
-        .catch((err) =>  { console.log(err)});
+    API.updateNumber("mynumber", obj)
+      .then((res) => console.log("Initialization succesful!"))
+      .catch((err) => {
+        API.addNumber(obj)
+          .then((res) => console.log("Initialization succesful!"))
+          .catch((err) => {
+            console.log(err);
+          });
       });
   }
 
+  splitByOperators(result) {
+    return (result
+          .split("*")
+          .join(",")
+          .split("+")
+          .join(",")
+          .split("-")
+          .join(",")
+          .split("/")
+          .join(",")
+          .split(","));
+  }
 
   addToExpression = (value) => {
+
+    this.SendMessage(
+      ""
+    );
+
     if (this.state.result !== "") {
       this.updateValues(value);
     }
@@ -126,13 +125,14 @@ class Calculator extends React.Component {
       } else {
         this.setState({ result: this.state.result });
       }
-    } else if (
-      value === "=" 
-    ) {
-
-      if(this.state.result === '' || this.state.operations.includes(this.state.prevValue))
-      {
-        this.SendMessage("Your expression is wrong. Please make it correct (use AC/C) !");
+    } else if (value === "=") {
+      if (
+        this.state.result === "" ||
+        this.state.operations.includes(this.state.prevValue)
+      ) {
+        this.SendMessage(
+          "Your expression is wrong. Please make it correct (use AC/C) !"
+        );
         return;
       }
       let prev = "";
@@ -145,24 +145,28 @@ class Calculator extends React.Component {
           this.state.operations.includes(prev) &&
           this.state.operations.includes(curr)
         ) {
-          this.SendMessage("Your expression is wrong. Please make it correct (use AC/C) !");
+          this.SendMessage(
+            "Your expression is wrong. Please make it correct (use AC/C) !"
+          );
           return;
         }
       }
-      if(typeof this.state.result === 'string' )
-      {
-        let mytags =  this.state.result.split('*').join(',').split('+').join(',').split('-').join(',').split('/').join(',').split(',');
+      if (typeof this.state.result === "string") {
+        let mytags = this.splitByOperators(this.state.result);
 
-        for(let i = 0; i<mytags.length;++i){
-          if((mytags[i].length > 1  && mytags[i][0] === '0' && mytags[i][1] !== '.')){
-  
-            this.SendMessage("Your expression is wrong. Please make it correct (use AC/C) !");
+        for (let i = 0; i < mytags.length; ++i) {
+          if (
+            mytags[i].length > 1 &&
+            mytags[i][0] === "0" &&
+            mytags[i][1] !== "."
+          ) {
+            this.SendMessage(
+              "Your expression is wrong. Please make it correct (use AC/C) !"
+            );
             return;
           }
         }
       }
-      
-
 
       this.setState({ result: eval(this.state.result) });
     } else {
@@ -217,9 +221,7 @@ class Calculator extends React.Component {
       <div>
         <div className="calculator">
           <h1>CALCULATOR</h1>
-          <textarea readOnly value={this.state.message}>
-            
-          </textarea>
+          <textarea readOnly value={this.state.message}></textarea>
           <div>
             <input
               className="result"

@@ -3,7 +3,7 @@ import React from "react";
 import axios from "axios";
 
 import API from "../utils/API";
-import CalculatorButtons from "../utils/constans"
+import CalculatorButtons from "../utils/constans";
 
 class Calculator extends React.Component {
   constructor() {
@@ -15,7 +15,7 @@ class Calculator extends React.Component {
       result: "",
       message: "Welcome to my Calculator Application!",
       deletebuttons: ["AC", "C"],
-      buttons: CalculatorButtons
+      buttons: CalculatorButtons,
     };
   }
 
@@ -47,24 +47,23 @@ class Calculator extends React.Component {
       return; //check if the result is a number or not
     }
 
-    for (let i = 0; i < this.state.result.length; ++i) {
-      if (
-        this.state.result[i].length > 1 &&
-        this.state.result[i][0] === "0" &&
-        this.state.result[i][1] !== "."
-      ) {
-        this.SendMessage(
-          "Your expression is wrong. Please make it correct (use AC/C) !"
-        );
-        return;
-      }
+    if (
+      this.state.resultlength > 1 &&
+      this.state.result[0] === "0" &&
+      this.state.result[1] !== "."
+    ) {
+      this.SendMessage(
+        "Your expression is wrong. Please make it correct (use AC/C) !"
+      );
+      return;
     }
+
     console.log("Write the number to the file!");
 
     const obj = { id: "mynumber", value: this.state.result };
-    API.updateNumber("mynumber", obj).then((res) =>
-      console.log(res.data)).catch((err) => console.log(err)
-    );
+    API.updateNumber("mynumber", obj)
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
   }
 
   SendMessageToWrite(data) {
@@ -96,23 +95,20 @@ class Calculator extends React.Component {
   }
 
   splitByOperators(result) {
-    return (result
-          .split("*")
-          .join(",")
-          .split("+")
-          .join(",")
-          .split("-")
-          .join(",")
-          .split("/")
-          .join(",")
-          .split(","));
+    return result
+      .split("*")
+      .join(",")
+      .split("+")
+      .join(",")
+      .split("-")
+      .join(",")
+      .split("/")
+      .join(",")
+      .split(",");
   }
 
   addToExpression = (value) => {
-
-    this.SendMessage(
-      ""
-    );
+    this.SendMessage("");
 
     if (this.state.result !== "") {
       this.updateValues(value);

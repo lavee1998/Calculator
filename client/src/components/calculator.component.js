@@ -15,18 +15,18 @@ class Calculator extends React.Component {
       buttons: CalculatorButtons,
     };
   }
-  SendMessage(message) {
+  sendMessage(message) {
     console.log(message);
     this.setState({ message: message });
   }
 
-  Read() {
+  readNumberFromFile() {
     console.log("Read the number from the file!");
 
     API.getNumberById("mynumber")
       .then((res) => {
         this.setState({ result: res.data.value }, () =>
-          this.SendMessage("The number value: " + this.state.result + "\n")
+          this.sendMessage("The number value: " + this.state.result + "\n")
         );
       })
       .catch((error) => {
@@ -34,7 +34,7 @@ class Calculator extends React.Component {
       });
   }
 
-  Write() {
+  writeNumberToFile() {
     if (isNaN(this.state.result) || this.state.result === "") {
       this.setState({
         message: "Your expression is not a number, please edit it!",
@@ -47,7 +47,7 @@ class Calculator extends React.Component {
       this.state.result[0] === "0" &&
       this.state.result[1] !== "."
     ) {
-      this.SendMessage(
+      this.sendMessage(
         "Your expression is wrong. Please make it correct (use AC/C) !"
       );
       return;
@@ -58,24 +58,24 @@ class Calculator extends React.Component {
     const obj = { id: "mynumber", value: this.state.result };
     API.updateNumber("mynumber", obj)
       .then((res) => {
-        this.SendMessage(res.data);
+        this.sendMessage(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  SendMessageToWrite(data) {
+  sendMessageToWrite(data) {
     console.log(data);
   }
 
   updateValues = (value) => {
     this.setState({ currValue: this.state.currValue }, () =>
-      this.updatePrevvalue(value)
+      this.updatePrevValue(value)
     );
   };
 
-  updatePrevvalue = (value) => {
+  updatePrevValue = (value) => {
     this.setState({ prevValue: value });
   };
 
@@ -111,7 +111,7 @@ class Calculator extends React.Component {
   CheckExpression() {
     let prev = "";
     let curr = "";
-    
+
     for (let index = 0; index < this.state.result.length - 1; index++) {
       prev = this.state.result[index];
       curr = this.state.result[index + 1];
@@ -119,7 +119,7 @@ class Calculator extends React.Component {
         this.state.operations.includes(prev) &&
         this.state.operations.includes(curr)
       ) {
-        this.SendMessage(
+        this.sendMessage(
           "Your expression is wrong. Please make it correct (use AC/C) !"
         );
         return false;
@@ -134,7 +134,7 @@ class Calculator extends React.Component {
           mytags[i][0] === "0" &&
           mytags[i][1] !== "."
         ) {
-          this.SendMessage(
+          this.sendMessage(
             "Your expression is wrong. Please make it correct (use AC/C) !"
           );
           return false;
@@ -145,7 +145,7 @@ class Calculator extends React.Component {
   }
 
   addToExpression = (value) => {
-    this.SendMessage(""); //change the result to default
+    this.sendMessage(""); //change the result to default
 
     if (this.state.result !== "") {
       this.updateValues(value);
@@ -163,7 +163,7 @@ class Calculator extends React.Component {
         this.state.result === "" ||
         this.state.operations.includes(this.state.prevValue)
       ) {
-        this.SendMessage(
+        this.sendMessage(
           "Your expression is wrong. Please make it correct (use AC/C) !"
         );
         return;
@@ -171,7 +171,7 @@ class Calculator extends React.Component {
      
 
       if (!this.CheckExpression()) {
-        return this.SendMessage(
+        return this.sendMessage(
           "Your expression is wrong. Please make it correct (use AC/C) !"
         );
       }
@@ -210,11 +210,11 @@ class Calculator extends React.Component {
             </button>
           );
         })}
-        <button className="responsive long" onClick={() => this.Read()}>
+        <button className="responsive long" onClick={() => this.readNumberFromFile()}>
           {" "}
           READ{" "}
         </button>
-        <button className="responsive long" onClick={() => this.Write()}>
+        <button className="responsive long" onClick={() => this.writeNumberToFile()}>
           {" "}
           WRITE{" "}
         </button>

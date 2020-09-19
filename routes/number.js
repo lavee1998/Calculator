@@ -22,9 +22,11 @@ router.route("/update/:id").post((req, res) => {
       number
         .save()
         .then(() => res.json("Number updated!"))
-        .catch((err) => {res.status(400).json("Error: " + err)});
+        .catch((err) => {res.status(400).json("Error3: " + err);
+        console.log("Error3: " + err);});
     })
-    .catch((err) => {res.status(400).json("Error: " + err)});
+    .catch((err) => {res.status(400).json("Error2: " + err);
+  console.log("Error2: " + err);});
 });
 
 router.route("/add").post((req, res) => {

@@ -1,6 +1,6 @@
 import React from "react";
 import API from "../utils/API";
-import CalculatorButtons from "../utils/constans";
+import CalculatorButtons from "../utils/constants";
 
 class Calculator extends React.Component {
   constructor() {
@@ -15,6 +15,10 @@ class Calculator extends React.Component {
       buttons: CalculatorButtons,
     };
   }
+  SendMessage(message) {
+    console.log(message);
+    this.setState({ message: message });
+  }
 
   Read() {
     console.log("Read the number from the file!");
@@ -25,18 +29,13 @@ class Calculator extends React.Component {
           this.SendMessage("The number value: " + this.state.result + "\n")
         );
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   }
 
-  SendMessage(message) {
-    console.log(message);
-    this.setState({ message: message });
-  }
-
   Write() {
-    if (isNaN(this.state.result) || this.state.result === '') {
+    if (isNaN(this.state.result) || this.state.result === "") {
       this.setState({
         message: "Your expression is not a number, please edit it!",
       });
@@ -58,9 +57,12 @@ class Calculator extends React.Component {
 
     const obj = { id: "mynumber", value: this.state.result };
     API.updateNumber("mynumber", obj)
-      .then((res) => {console.log(res.data);})
-      .catch((err) => {console.log(err);});
-
+      .then((res) => {
+        this.SendMessage(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   SendMessageToWrite(data) {
@@ -81,7 +83,9 @@ class Calculator extends React.Component {
     //init
     const obj = { id: this.state.myId, value: "0" };
     API.updateNumber("mynumber", obj)
-      .then((res) => {console.log("Initialization succesful!")})
+      .then((res) => {
+        console.log("Initialization succesful!");
+      })
       .catch((err) => {
         API.addNumber(obj)
           .then((res) => console.log("Initialization succesful!"))
@@ -91,8 +95,8 @@ class Calculator extends React.Component {
       });
   }
 
-  splitByOperators(result) {
-    return result
+  splitByOperators() {
+    return this.state.result
       .split("*")
       .join(",")
       .split("+")
@@ -104,8 +108,44 @@ class Calculator extends React.Component {
       .split(",");
   }
 
+  CheckExpression() {
+    let prev = "";
+    let curr = "";
+    
+    for (let index = 0; index < this.state.result.length - 1; index++) {
+      prev = this.state.result[index];
+      curr = this.state.result[index + 1];
+      if (
+        this.state.operations.includes(prev) &&
+        this.state.operations.includes(curr)
+      ) {
+        this.SendMessage(
+          "Your expression is wrong. Please make it correct (use AC/C) !"
+        );
+        return false;
+      }
+    }
+    if (typeof this.state.result === "string") {
+      let mytags = this.splitByOperators();
+
+      for (let i = 0; i < mytags.length; ++i) {
+        if (
+          mytags[i].length > 1 &&
+          mytags[i][0] === "0" &&
+          mytags[i][1] !== "."
+        ) {
+          this.SendMessage(
+            "Your expression is wrong. Please make it correct (use AC/C) !"
+          );
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   addToExpression = (value) => {
-    this.SendMessage("");
+    this.SendMessage(""); //change the result to default
 
     if (this.state.result !== "") {
       this.updateValues(value);
@@ -128,39 +168,13 @@ class Calculator extends React.Component {
         );
         return;
       }
-      let prev = "";
-      let curr = "";
+     
 
-      for (let index = 0; index < this.state.result.length - 1; index++) {
-        prev = this.state.result[index];
-        curr = this.state.result[index + 1];
-        if (
-          this.state.operations.includes(prev) &&
-          this.state.operations.includes(curr)
-        ) {
-          this.SendMessage(
-            "Your expression is wrong. Please make it correct (use AC/C) !"
-          );
-          return;
-        }
+      if (!this.CheckExpression()) {
+        return this.SendMessage(
+          "Your expression is wrong. Please make it correct (use AC/C) !"
+        );
       }
-      if (typeof this.state.result === "string") {
-        let mytags = this.splitByOperators(this.state.result);
-
-        for (let i = 0; i < mytags.length; ++i) {
-          if (
-            mytags[i].length > 1 &&
-            mytags[i][0] === "0" &&
-            mytags[i][1] !== "."
-          ) {
-            this.SendMessage(
-              "Your expression is wrong. Please make it correct (use AC/C) !"
-            );
-            return;
-          }
-        }
-      }
-
       this.setState({ result: eval(this.state.result) });
     } else {
       this.setState({ result: this.state.result + value });

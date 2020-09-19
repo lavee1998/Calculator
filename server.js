@@ -24,7 +24,7 @@ const numberRouter = require(constants.NUMBER_ROUTER_URL);
 
 app.use(constants.NUMBER_URL, numberRouter);
 
-
+console.log("Server running");
 //for heroku
 app.use(express.static(constants.CLIENT_BUILD_URL));
 

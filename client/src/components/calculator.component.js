@@ -1,7 +1,4 @@
 import React from "react";
-
-import axios from "axios";
-
 import API from "../utils/API";
 import CalculatorButtons from "../utils/constans";
 
@@ -24,12 +21,11 @@ class Calculator extends React.Component {
 
     API.getNumberById("mynumber")
       .then((res) => {
-        // console.log(res.data)
         this.setState({ result: res.data.value }, () =>
           this.SendMessage("The number value: " + this.state.result + "\n")
         );
       })
-      .catch(function (error) {
+      .catch(error => {
         console.log(error);
       });
   }
@@ -40,7 +36,7 @@ class Calculator extends React.Component {
   }
 
   Write() {
-    if (isNaN(this.state.result)) {
+    if (isNaN(this.state.result) || this.state.result === '') {
       this.setState({
         message: "Your expression is not a number, please edit it!",
       });
@@ -62,8 +58,9 @@ class Calculator extends React.Component {
 
     const obj = { id: "mynumber", value: this.state.result };
     API.updateNumber("mynumber", obj)
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
+      .then((res) => {console.log(res.data);})
+      .catch((err) => {console.log(err);});
+
   }
 
   SendMessageToWrite(data) {
@@ -84,12 +81,12 @@ class Calculator extends React.Component {
     //init
     const obj = { id: this.state.myId, value: "0" };
     API.updateNumber("mynumber", obj)
-      .then((res) => console.log("Initialization succesful!"))
+      .then((res) => {console.log("Initialization succesful!")})
       .catch((err) => {
         API.addNumber(obj)
           .then((res) => console.log("Initialization succesful!"))
-          .catch((err) => {
-            console.log(err);
+          .catch((error) => {
+            console.log(error);
           });
       });
   }
